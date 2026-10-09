@@ -1,0 +1,14 @@
+# Environments
+venv/
+env/
+.venv/
+
+# Python caching
+__pycache__/
+*.pyc
+
+# Vercel caching
+.vercel/
+
+# (หากไม่ต้องการเอาฐานข้อมูลขึ้นไปด้วย ให้ลบเครื่องหมาย # ข้างหน้าบรรทัดล่างสุดออก)
+# db.sqlite3

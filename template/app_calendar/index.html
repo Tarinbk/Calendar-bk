@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beautiful Calendar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        :root {
+            --bg-color: #f3f4f6;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(255, 255, 255, 0.4);
+            --primary-color: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.4);
+            --holiday-color: #ef4444;
+            --wanphra-color: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', 'Kanit', sans-serif;
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: -0.05em;
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Year Filter Styling */
+        .filter-container {
+            display: inline-flex;
+            align-items: center;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 15px;
+        }
+
+        .filter-container label {
+            font-weight: 600;
+            margin-right: 15px;
+            color: #374151;
+        }
+
+        .filter-container select {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            background-color: white;
+            color: var(--primary-color);
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .filter-container select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .calendar-container {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 25px;
+        }
+
+        .month-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .month-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .month-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: left;
+            color: #111827;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 4px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .day-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .day-cell {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            border-radius: 12px;
+            color: var(--text-main);
+            transition: background-color 0.2s, color 0.2s, transform 0.2s;
+            position: relative;
+        }
+
+        .day-number {
+            font-size: 1rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .holiday-text {
+            font-family: 'Kanit', sans-serif;
+            font-size: 0.55rem;
+            font-weight: 500;
+            color: var(--holiday-color);
+            margin-top: 2px;
+            line-height: 1.1;
+            padding: 0 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            z-index: 2;
+        }
+
+        .holiday-text.wan-phra {
+            color: var(--wanphra-color);
+        }
+
+        .day-cell.empty {
+            color: transparent;
+            pointer-events: none;
+        }
+
+        .day-cell:not(.empty):not(.today):hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--primary-color);
+            cursor: pointer;
+            transform: scale(1.05);
+        }
+
+        /* วันที่ปัจจุบัน (วงกลมสีฟ้า) */
+        .day-cell.today {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 15px var(--primary-glow);
+            transform: scale(1.08);
+        }
+
+        .day-cell.today .holiday-text {
+            color: #fff; /* ให้สีข้อความวันหยุดในวันปัจจุบันกลายเป็นสีขาวเพื่อให้อ่านง่าย */
+            opacity: 0.9;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Overview {{ year }}</h1>
+        
+        <!-- Form สำหรับเลือกปี -->
+        <form method="GET" action="/" class="filter-container">
+            <label for="year-select">เลือกปี (Year):</label>
+            <select name="year" id="year-select" onchange="this.form.submit()">
+                {% for y in years_list %}
+                    <option value="{{ y }}" {% if y == year %}selected{% endif %}>{{ y }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    <div class="calendar-container">
+        {% for month in months_data %}
+        <div class="month-card">
+            <h2 class="month-name">{{ month.name }}</h2>
+            <div class="days-grid">
+                <!-- หัวตารางวัน จันทร์ - อาทิตย์ -->
+                <div class="day-name">Mo</div>
+                <div class="day-name">Tu</div>
+                <div class="day-name">We</div>
+                <div class="day-name">Th</div>
+                <div class="day-name">Fr</div>
+                <div class="day-name">Sa</div>
+                <div class="day-name">Su</div>
+
+                <!-- วนลูปสัปดาห์และวัน -->
+                {% for week in month.weeks %}
+                    {% for d in week %}
+                        {% if d.day == 0 %}
+                            <div class="day-cell empty"></div>
+                        {% else %}
+                            <div class="day-cell {% if year == today.year and month.num == today.month and d.day == today.day %}today{% endif %}">
+                                <div class="day-number">{{ d.day }}</div>
+                                {% if d.holiday %}
+                                    <div class="holiday-text {% if d.is_wan_phra %}wan-phra{% endif %}">
+                                        {{ d.holiday }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
